@@ -12,19 +12,11 @@
 | Input | Partitions (Valid / Invalid) | Representative Value | Expected Behavior | Actual Behavior | Pass/Fail |
 |--------|-------------------------------|----------------------|-------------------|-----------------|------------|
 | Brand |Valid: {apple, samsung, google, "" (All)}
- | Valid: “apple”
-Invalid: “nokia” | Valid → Apple products displayed.
-Invalid → Show “No products match your filters.” | “apple” → Products shown correctly.
-“nokia” → Blank grid with message “No products match your filters.” | Pass |
+ | | | | |
 | Price Range |Valid: {0–500, 500–1000, 1000–1500, "" (Any)}
-| Valid: “500–1000”
-Invalid: custom 2000 | Valid → Filter between $500–$1000.
-Invalid → Should show no results or error message. | “500–1000” → Correct results.
-2000 → Ignored silently, “Any Price” logic applied. | Fail |
+| | | | |
 | Storage (GB) |Valid: 64–1024
- | Valid: 128
-Invalid: 32 | Valid → Filter by 128GB products.
-Invalid → Show error “Must be between 64–1024 GB.” | 32 → Error message displayed under field. | Pass |
+ | | | | |
 
 **Observations / Notes:**  
 -  Validation for storage works correctly.
