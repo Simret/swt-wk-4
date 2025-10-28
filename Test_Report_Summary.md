@@ -12,11 +12,11 @@
 | Input | Partitions (Valid / Invalid) | Representative Value | Expected Behavior | Actual Behavior | Pass/Fail |
 |--------|-------------------------------|----------------------|-------------------|-----------------|------------|
 | Brand |Valid: {apple, samsung, google, "" (All)}
-Invalid: {“nokia”, “123”, symbols} | | | | |
+ | | | | |
 | Price Range |Valid: {0–500, 500–1000, 1000–1500, "" (Any)}
-Invalid: {Negative, >1500, malformed text} | | | | |
+| | | | |
 | Storage (GB) |Valid: 64–1024
-Invalid: <64, >1024 | | | | |
+ | | | | |
 
 **Observations / Notes:**  
 -  Validation for storage works correctly.
@@ -97,9 +97,9 @@ List your identified defects here and include links or filenames if using separa
 
 | ID | Title | Severity | Summary |
 |----|--------|-----------|----------|
-| BUG-01 |Invalid price range ignored silently  |  |  |
-| BUG-02 |Lack of error for malformed price input  |  |  |
-| BUG-03 *(optional)* |No explicit message for “no brand + invalid storage”  |  |  |
+| BUG-01 |Invalid price range ignored silently  | Invalid price range ignored silently | Medium | Out-of-range price inputs (e.g. $2000) are accepted without feedback.
+| BUG-02 |Lack of error for malformed price input  | Lack of error for malformed price input | Low | If text or symbol entered in price field (after editing HTML), app fails silently.
+| BUG-03 *(optional)* |No explicit message for “no brand + invalid storage”  | No explicit message for “no brand,storage” | Low | When both brand empty and storage invalid, only error shown—no “no results” message.
 
 ---
 
