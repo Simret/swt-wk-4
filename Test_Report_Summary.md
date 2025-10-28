@@ -12,11 +12,19 @@
 | Input | Partitions (Valid / Invalid) | Representative Value | Expected Behavior | Actual Behavior | Pass/Fail |
 |--------|-------------------------------|----------------------|-------------------|-----------------|------------|
 | Brand |Valid: {apple, samsung, google, "" (All)}
- | | | | |
+ | Valid: “apple”
+Invalid: “nokia” | Valid → Apple products displayed.
+Invalid → Show “No products match your filters.” | “apple” → Products shown correctly.
+“nokia” → Blank grid with message “No products match your filters.” | Pass |
 | Price Range |Valid: {0–500, 500–1000, 1000–1500, "" (Any)}
-| | | | |
+| Valid: “500–1000”
+Invalid: custom 2000 | Valid → Filter between $500–$1000.
+Invalid → Should show no results or error message. | “500–1000” → Correct results.
+2000 → Ignored silently, “Any Price” logic applied. | Fail |
 | Storage (GB) |Valid: 64–1024
- | | | | |
+ | Valid: 128
+Invalid: 32 | Valid → Filter by 128GB products.
+Invalid → Show error “Must be between 64–1024 GB.” | 32 → Error message displayed under field. | Pass |
 
 **Observations / Notes:**  
 -  Validation for storage works correctly.
@@ -31,7 +39,7 @@
 
 | Parameter | Boundaries Identified | Test Values (−1 / = / +1) | Expected | Actual | Notes | Pass/Fail |
 |------------|------------------------|----------------------------|-----------|---------|--------|-----------|
-| Storage (GB) |64 (min), 1024 (max)  63, 64, 65, 1023, 1024, 1025 | 63,1025 → error | shows red validation error. Others valid. | Validation UI functions correctly. | Pass |
+| Storage (GB) |64 (min), 1024 (max) | 63, 64, 65, 1023, 1024, 1025 | 63,1025 → error | 63,1025 →  shows red validation error. Others valid. | Validation UI functions correctly. | Pass |
 | Price Range |0–500, 500–1000, 1000–1500 | 499, 500, 501, 1499, 1500, 1501 | 499,1501 → no results | 499 accepted but no product (no error); boundaries inclusive (500–1500 works). | Inclusivity works but lacks explicit invalid handling. | Fail |
 
 **Summary:**  
@@ -48,7 +56,7 @@
 |--------|--------------|---------------|-------------------------------------------|----------------|-----------|
 |apple | 500–1000 | 128 | iPhone 13 (#1) | 1 product shown | Pass |
 |samsung | 1000–1500 | 512 | Galaxy Z Flip (#5) | 1 product shown | Pass |
-|google | 0–500 | 128 | Pixel 6 ($599) excluded | Message shown | |
+|google | 0–500 | 128 | Pixel 6 ($599) excluded | Message shown | Pass |
 |apple | 1000–1500 | 1024 | iPhone 14 Pro | 1 product shown | Pass |
 |google | 500–1000 | 65 | Pixel 7a | 1 product shown | Pass |
 
