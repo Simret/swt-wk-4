@@ -31,8 +31,8 @@
 
 | Parameter | Boundaries Identified | Test Values (−1 / = / +1) | Expected | Actual | Notes | Pass/Fail |
 |------------|------------------------|----------------------------|-----------|---------|--------|-----------|
-| Storage (GB) |64 (min), 1024 (max) | | | | | |
-| Price Range |0–500, 500–1000, 1000–1500 | | | | | |
+| Storage (GB) |64 (min), 1024 (max)  63, 64, 65, 1023, 1024, 1025 | 63,1025 → error | shows red validation error. Others valid. | Validation UI functions correctly. | Pass |
+| Price Range |0–500, 500–1000, 1000–1500 | 499, 500, 501, 1499, 1500, 1501 | 499,1501 → no results | 499 accepted but no product (no error); boundaries inclusive (500–1500 works). | Inclusivity works but lacks explicit invalid handling. | Fail |
 
 **Summary:**  
 -  Storage boundaries handled well with visible error feedback.
@@ -46,11 +46,11 @@
 
 | Brand | Price Range | Storage (GB) | Expected Outcome (IDs / Count / Message) | Actual Outcome | Pass/Fail |
 |--------|--------------|---------------|-------------------------------------------|----------------|-----------|
-|apple | | | | | |
-|samsung | | | | | |
-|google | | | | | |
-|apple | | | | | |
-|google | | | | | |
+|apple | 500–1000 | 128 | iPhone 13 (#1) | 1 product shown | Pass |
+|samsung | 1000–1500 | 512 | Galaxy Z Flip (#5) | 1 product shown | Pass |
+|google | 0–500 | 128 | Pixel 6 ($599) excluded | Message shown | |
+|apple | 1000–1500 | 1024 | iPhone 14 Pro | 1 product shown | Pass |
+|google | 500–1000 | 65 | Pixel 7a | 1 product shown | Pass |
 
 **Findings:**  
 -  All logical combinations of brand/price/storage work.
