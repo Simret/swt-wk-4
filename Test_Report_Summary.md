@@ -12,16 +12,16 @@
 | Input | Partitions (Valid / Invalid) | Representative Value | Expected Behavior | Actual Behavior | Pass/Fail |
 |--------|-------------------------------|----------------------|-------------------|-----------------|------------|
 | Brand |Valid: {apple, samsung, google, "" (All)}
-Invalid: {“nokia”, “123”, symbols} |Valid: “apple”
-Invalid: “nokia” |Valid → Apple products displayed.
-Invalid → Show “No products match your filters.” |“apple” → Products shown correctly.
-“nokia” → Blank grid with message “No products match your filters.” |Pass |
-| Price Range | | | | | |
-| Storage (GB) | | | | | |
+Invalid: {“nokia”, “123”, symbols} | | | | |
+| Price Range |Valid: {0–500, 500–1000, 1000–1500, "" (Any)}
+Invalid: {Negative, >1500, malformed text} | | | | |
+| Storage (GB) |Valid: 64–1024
+Invalid: <64, >1024 | | | | |
 
 **Observations / Notes:**  
--  
--  
+-  Validation for storage works correctly.
+-  Invalid price range not validated — app silently accepts out-of-range values.
+-  Brand filter robust, gracefully handles “no result” scenarios.
 
 ---
 
@@ -31,12 +31,12 @@ Invalid → Show “No products match your filters.” |“apple” → Products
 
 | Parameter | Boundaries Identified | Test Values (−1 / = / +1) | Expected | Actual | Notes | Pass/Fail |
 |------------|------------------------|----------------------------|-----------|---------|--------|-----------|
-| Storage (GB) | | | | | | |
-| Price Range | | | | | | |
+| Storage (GB) |64 (min), 1024 (max) | | | | | |
+| Price Range |0–500, 500–1000, 1000–1500 | | | | | |
 
 **Summary:**  
--  
--  
+-  Storage boundaries handled well with visible error feedback.
+-  Price boundaries behave inclusively but lack validation messaging for out-of-range inputs.
 
 ---
 
@@ -46,15 +46,16 @@ Invalid → Show “No products match your filters.” |“apple” → Products
 
 | Brand | Price Range | Storage (GB) | Expected Outcome (IDs / Count / Message) | Actual Outcome | Pass/Fail |
 |--------|--------------|---------------|-------------------------------------------|----------------|-----------|
-| | | | | | |
-| | | | | | |
-| | | | | | |
-| | | | | | |
-| | | | | | |
+|apple | | | | | |
+|samsung | | | | | |
+|google | | | | | |
+|apple | | | | | |
+|google | | | | | |
 
 **Findings:**  
--  
--  
+-  All logical combinations of brand/price/storage work.
+-  Some out-of-bound price combinations silently ignored.
+-  No critical functional defects, but validation consistency can improve.
 
 ---
 
@@ -63,30 +64,31 @@ Invalid → Show “No products match your filters.” |“apple” → Products
 **Objective:** Identify major UI states and test how the system transitions between them.  
 
 ### **4.1 States Identified**
-- Start / Idle  
-- InputReady  
-- Results  
-- NoResults  
-- Reset / Clear  
+- Start / Idle  – All products displayed.
+- FilterApplied – Display products matching criteria.    
+- NoResults  – No match found → message displayed.
+- Reset / Clear  – Clicking “🔄 Reset Filters” returns to all products.
 
 ### **4.2 Actions and Transitions**
 
 | Current State | Action / Event | Expected Next State | Actual Next State | Pass/Fail |
 |----------------|----------------|---------------------|-------------------|-----------|
-| | | | | |
-| | | | | |
-| | | | | |
+|Start | | | | |
+|FilterApplied | | | | |
+|InvalidInput | | | | |
 
 ### **4.3 Optional Mermaid Diagram**
 
 ```mermaid
 stateDiagram-v2
   [*] --> Start
-  Start --> InputReady: user selects filters
-  InputReady --> Results: click "Apply Filters"
-  Results --> NoResults: conditions exclude all
-  NoResults --> Results: adjust filters
-  Results --> Start: reset filters
+  Start --> FilterApplied: Apply valid filters
+  FilterApplied --> NoResults: No matches
+  NoResults --> FilterApplied: Adjust filters
+  FilterApplied --> InvalidInput: Storage <64 or >1024
+  InvalidInput --> FilterApplied: Correct input
+  FilterApplied --> Start: Click Reset Filters
+
 ```
 
 ## 🐞 5. Defect Reports Summary
@@ -95,9 +97,9 @@ List your identified defects here and include links or filenames if using separa
 
 | ID | Title | Severity | Summary |
 |----|--------|-----------|----------|
-| BUG-01 |  |  |  |
-| BUG-02 |  |  |  |
-| BUG-03 *(optional)* |  |  |  |
+| BUG-01 |Invalid price range ignored silently  |  |  |
+| BUG-02 |Lack of error for malformed price input  |  |  |
+| BUG-03 *(optional)* |No explicit message for “no brand + invalid storage”  |  |  |
 
 ---
 
@@ -105,14 +107,14 @@ List your identified defects here and include links or filenames if using separa
 
 **Title:**  
 **Steps to Reproduce:**  
-1.  
-2.  
-3.  
+1.  Open the SmartPhone Hub app.
+2.  Modify the price dropdown (in dev tools) to value “2000–2500”.
+3.  Click “Apply Filters.”
 
-**Expected:**  
-**Actual:**  
-**Severity:**  
-**Notes:**  
+**Expected:**  System should show a validation error or “No products match your filters.”
+**Actual:**  No message shown; all products remain visible.
+**Severity:**  Medium
+**Notes:**  Edge validation missing for out-of-range or non-standard values.
 
 ---
 
@@ -121,10 +123,15 @@ List your identified defects here and include links or filenames if using separa
 Answer briefly in your own words:
 
 - Which technique revealed issues most effectively?  
+Boundary Value Analysis — it immediately revealed gaps in input validation and inclusive/exclusive logic for prices.
 - Did any values behave differently than expected?  
-- How would you improve your coverage next time?  
+Price ranges accepted invalid values silently; storage validation, however, worked perfectly.
+- How would you improve your coverage next time? 
+ Add negative testing for modified DOM inputs (simulate tampering). Automate decision-table-based scenarios using Cypress or Playwright.
 - Which 2 test cases would you automate first and why?  
+Storage boundary validation (63, 64, 1024, 1025)
 
+Multi-filter combination (apple + 500–1000 + 128GB) — to confirm data integrity after updates.
 ---
 
 ## 📎 7. Attachments (optional)
