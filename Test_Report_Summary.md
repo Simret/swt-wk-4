@@ -73,9 +73,9 @@
 
 | Current State | Action / Event | Expected Next State | Actual Next State | Pass/Fail |
 |----------------|----------------|---------------------|-------------------|-----------|
-|Start | | | | |
-|FilterApplied | | | | |
-|InvalidInput | | | | |
+|Start | Apply valid filter | FilterApplied | FilterApplied | Pass |
+|FilterApplied | Change filters to exclude results | NoResults | NoResults | Pass |
+|InvalidInput | Fix storage input | FilterApplied | FilterApplied | Pass |
 
 ### **4.3 Optional Mermaid Diagram**
 
